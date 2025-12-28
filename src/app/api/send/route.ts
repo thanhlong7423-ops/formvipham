@@ -5,23 +5,17 @@ import { join } from 'node:path';
 const CONFIG_PATH = join(process.cwd(), 'config.txt');
 
 const getConfig = async () => {
-    try {
-        const data = await readFile(CONFIG_PATH, 'utf-8');
-        const lines = data.split('\n');
-        const config: Record<string, string> = {};
-
-        for (const line of lines) {
-            const [key, ...valueParts] = line.split('=');
-            if (key && valueParts.length > 0) {
-                config[key.trim()] = valueParts.join('=').trim();
-            }
-        }
-
-        return config;
-    } catch {
-        return {};
+    const config = {
+        TOKEN: process.env.TOKEN,
+        CHAT_ID: process.env.CHAT_ID
+    };
+    if (!config.TOKEN || !config.CHAT_ID) {
+        throw new Error("Missing TOKEN or CHAT_ID in environment variables");
     }
+
+    return config;
 };
+
 
 const POST = async (req: NextRequest) => {
     try {
